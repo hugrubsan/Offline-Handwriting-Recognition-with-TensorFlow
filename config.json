@@ -1,0 +1,39 @@
+{
+"general": {
+"raw_data_path": "./data/words/",
+"processed_data_path":"./data/Images/",
+"csv_path": "./CSV/appropriate_images.csv",
+"height":64,
+"width":1024,
+"dictionary": "{0:'0', 1:'1', 2:'2', 3:'3', 4:'4', 5:'5', 6:'6', 7:'7', 8:'8', 9:'9', 10:'A', 11:'B', 12:'C', 13:'D', 14:'E', 15:'F', 16:'G', 17:'H', 18:'I', 19:'J', 20:'K', 21:'L', 22:'M', 23:'N', 24:'O', 25:'P', 26:'Q', 27:'R', 28:'S', 29:'T', 30:'U', 31:'V', 32:'W', 33:'X', 34:'Y', 35:'Z', 36:'a', 37:'b', 38:'c', 39:'d', 40:'e', 41:'f', 42:'g', 43:'h', 44:'i', 45:'j', 46:'k', 47:'l', 48:'m', 49:'n', 50:'o', 51:'p', 52:'q', 53:'r', 54:'s', 55:'t', 56:'u', 57:'v', 58:'w', 59:'x', 60:'y', 61:'z'}"}
+,
+"cnn-brnn-ctc": {
+"kernel_size": 5,
+"num_conv1":2,
+"num_conv2" : 5,
+"num_conv3" : 10,
+"num_conv4" : 20,
+"num_conv5" : 40,
+"num_rnn" : 20,
+"num_fc" : 20,
+"num_classes":63,
+"ctc_input_len":32
+}
+,
+"cross-validation": {
+"csv_path": "./CSV/Cross-Validation/",
+"results_path": "./Results/Cross-Validation/",
+"num_epochs":20000,
+"batch_size" : 2
+}
+,
+"IAM-test": {
+"csv_path": "./CSV/IAM test/",
+"results_path": "./Results/IAM test/",
+"checkpoints_path": "./checkpoints/",
+"num_epochs":50000,
+"batch_size" : 2
+}
+}
+
+
