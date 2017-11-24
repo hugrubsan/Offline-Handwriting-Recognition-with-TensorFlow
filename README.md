@@ -129,4 +129,4 @@ Una vez tenemos el modelo entrenado, obtenemos el resultado del test ejecutando:
 python3 test.py [path_config_file]
 ```
 
-El resultado de se muestra por pantalla y las salidas del sistema se almacenan en CSV.
+El resultado se muestra por pantalla y las salidas del sistema se almacenan en CSV.
