@@ -39,6 +39,9 @@ def run_ctc():
     # Si el directorio destino no existe, se crea.
     if not os.path.exists(str(config["IAM-test"]["results_path"])):
         os.mkdir(str(config["IAM-test"]["results_path"]))
+    if not os.path.exists(str(config["IAM-test"]["checkpoints_path"])):
+        os.mkdir(str(config["IAM-test"]["checkpoints_path"]))
+
 
     # Extraemos las variables generales para el entrenamiento.
     im_path=str(config["general"]["processed_data_path"])
