@@ -15,20 +15,18 @@ def main():
     if len(sys.argv) == 1:
         print("Execution without arguments, config file by default: ./config.json")
         config_file=str('./config.json')
-
     elif len(sys.argv) == 2:
         print("Execution with arguments, config file:" +str(sys.argv[1]))
         config_file = str(sys.argv[1])
-
     else:
         print()
         print("ERROR")
         print("Wrong number of arguments. Execute:")
-        print(">> python3 Clean_IAM.py [path_config_file]")
+        print(">> python3 clean_IAM.py [path_config_file]")
         exit(1)
 
 
-    # Carga del archivo de configuración
+    # Cargamos el archivo de configuración
     try:
         data = json.load(open(config_file))
     except FileNotFoundError:
@@ -56,8 +54,8 @@ def main():
             (name, ext) = os.path.splitext(file)
             # Comprobamos si el fichero está en el array de imagenes aptas.
             if name in lstIm:
-                # Se ejecuta la función "Scale_Invert"
-                hw_utils.Scale_Invert(str(root)+str("/")+str(name+ext),str(data["general"]["processed_data_path"])+str(name+ext),int(data["general"]["height"]),int(data["general"]["width"]))
+                # Se ejecuta la función "scale_invert"
+                hw_utils.scale_invert(str(root)+str("/")+str(name+ext),str(data["general"]["processed_data_path"])+str(name+ext),int(data["general"]["height"]),int(data["general"]["width"]))
 
 
 if __name__ == "__main__":

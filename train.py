@@ -5,7 +5,7 @@ from random import randint
 import tensorflow as tf
 import hw_utils
 import pandas as pd
-import models
+import ANN_model
 import json
 import ast
 
@@ -24,10 +24,10 @@ def run_ctc():
         print()
         print("ERROR")
         print("Wrong number of arguments. Execute:")
-        print(">> python3 cross-validation.py [path_config_file]")
+        print(">> python3 train.py [path_config_file]")
         exit(1)
 
-    # Carga del archivo de configuración
+    # Cargamos del archivo de configuración
     try:
         config = json.load(open(config_file))
     except FileNotFoundError:
@@ -36,34 +36,37 @@ def run_ctc():
         print("No such config file : " + config_file)
         exit(1)
 
+    # Si el directorio destino no existe, se crea.
     if not os.path.exists(str(config["IAM-test"]["results_path"])):
         os.mkdir(str(config["IAM-test"]["results_path"]))
 
-
+    # Extraemos las variables generales para el entrenamiento.
     im_path=str(config["general"]["processed_data_path"])
     csv_path=str(config["IAM-test"]["csv_path"])
     results_path=str(config["IAM-test"]["results_path"])
     checkpoints_path=str(config["IAM-test"]["checkpoints_path"])
     batch_size = int(config["IAM-test"]["batch_size"])
     num_epochs = int(config["IAM-test"]["num_epochs"])
+    val_period = int(config["IAM-test"]["validation_period"])
+    print_period = int(config["IAM-test"]["print_period"])
     height = int(config["general"]["height"])
     width = int(config["general"]["width"])
     dct=ast.literal_eval(str(config["general"]["dictionary"]))
 
+    # Extraemos los parametros del modelo a validar
+    kernel_size=int(config["cnn-rnn-ctc"]["kernel_size"])
+    num_conv1=int(config["cnn-rnn-ctc"]["num_conv1"])
+    num_conv2=int(config["cnn-rnn-ctc"]["num_conv2"])
+    num_conv3=int(config["cnn-rnn-ctc"]["num_conv3"])
+    num_conv4=int(config["cnn-rnn-ctc"]["num_conv4"])
+    num_conv5=int(config["cnn-rnn-ctc"]["num_conv5"])
+    num_rnn=int(config["cnn-rnn-ctc"]["num_rnn"])
+    num_fc=int(config["cnn-rnn-ctc"]["num_fc"])
+    num_classes=int(config["cnn-rnn-ctc"]["num_classes"])
+    ctc_input_len=int(config["cnn-rnn-ctc"]["ctc_input_len"])
 
-    kernel_size=int(config["cnn-brnn-ctc"]["kernel_size"])
-    num_conv1=int(config["cnn-brnn-ctc"]["num_conv1"])
-    num_conv2=int(config["cnn-brnn-ctc"]["num_conv2"])
-    num_conv3=int(config["cnn-brnn-ctc"]["num_conv3"])
-    num_conv4=int(config["cnn-brnn-ctc"]["num_conv4"])
-    num_conv5=int(config["cnn-brnn-ctc"]["num_conv5"])
-    num_rnn=int(config["cnn-brnn-ctc"]["num_rnn"])
-    num_fc=int(config["cnn-brnn-ctc"]["num_fc"])
-    num_classes=int(config["cnn-brnn-ctc"]["num_classes"])
-    ctc_input_len=int(config["cnn-brnn-ctc"]["ctc_input_len"])
-
-
-    model = models.CNN_BNN_CTC(kernel_size, num_conv1, num_conv2, num_conv3, num_conv4,
+    # Creamos el modelo ANN
+    model = ANN_model.CNN_RNN_CTC(kernel_size, num_conv1, num_conv2, num_conv3, num_conv4,
                                num_conv5, num_rnn, num_fc, height, width, num_classes)
     graph=model[0]
     inputs=model[1]
@@ -75,59 +78,87 @@ def run_ctc():
     ler=model[7]
     decoded=model[8]
 
+    # Declaramos el DataFrames para almacenar el resultado del entrenamiento y la validación.
+    train_result = pd.DataFrame()
+    val_result1 = pd.DataFrame()
+    val_result2 = pd.DataFrame()
 
-    result_train = pd.DataFrame()
-    result_validation1 = pd.DataFrame()
-    result_validation2 = pd.DataFrame()
 
 
-    saver=tf.train.Saver()
-
+    # Creamos la sesión con el modelo previamente cargado.
     with tf.Session(graph=graph) as session:
-
+        # Guardamos la arquitectura del modelo e inicializamos sus vaiables
+        saver=tf.train.Saver()
         tf.global_variables_initializer().run()
 
+        # Inicializamos el LER a 1.
+        LER=1.0
+
+        # Bucle de épocas.
         for curr_epoch in range(num_epochs):
 
-            train_inputs, train_targets, original, train_seq_len = hw_utils.extract_batch_train(ctc_input_len,batch_size,im_path,csv_path + "train.csv")
+            # Extraemos un lote aleatorio del Dataset de entrenamiento.
+            train_inputs, train_targets, original, train_seq_len = hw_utils.extract_training_batch(ctc_input_len,batch_size,im_path,csv_path + "train.csv")
             feed = {inputs: train_inputs, targets: train_targets, keep_prob: 0.5, seq_len: train_seq_len}
+
+            # Ejecutamos "optimizer", minimizando el error para el lote extraido.
             _ = session.run([optimizer], feed)
 
-            if curr_epoch % 50 == 0:
+            # Comprobamos el periodo de validación para el modelo.
+            if curr_epoch % val_period == 0:
+                # Calculamos el error de la CTC y el LER para el dataset de entrenamiento y almacenamos a los resultados.
                 train_cost, train_ler = session.run([cost, ler], feed)
-                tuple = {'epoch': [curr_epoch], 'train_cost': [train_cost], 'train_ler': [train_ler]}
-                result_train = pd.concat([result_train, pd.DataFrame(tuple)])
+                train_tuple = {'epoch': [curr_epoch], 'train_cost': [train_cost], 'train_ler': [train_ler]}
+                train_result = pd.concat([train_result, pd.DataFrame(train_tuple)])
 
-                tuple1=hw_utils.validation(curr_epoch,ctc_input_len, batch_size, im_path, csv_path + "validation1.csv", inputs, targets, keep_prob, seq_len, session,
+                # Realizamos la validación del modelo para los dos Datasets de validación y almacenamos los resultados
+                val_tuple1=hw_utils.validation(curr_epoch,ctc_input_len, batch_size, im_path, csv_path + "validation1.csv", inputs, targets, keep_prob, seq_len, session,
                            cost, ler)
-                result_validation1 = pd.concat([result_validation1, pd.DataFrame(tuple1)])
+                val_result1 = pd.concat([val_result1, pd.DataFrame(val_tuple1)])
 
-                tuple2 = hw_utils.validation(curr_epoch,ctc_input_len, batch_size, im_path, csv_path + "validation2.csv", inputs,
+                val_tuple2 = hw_utils.validation(curr_epoch,ctc_input_len, batch_size, im_path, csv_path + "validation2.csv", inputs,
                                            targets, keep_prob, seq_len, session,
                                            cost, ler)
-                result_validation2 = pd.concat([result_validation2, pd.DataFrame(tuple2)])
+                val_result2 = pd.concat([val_result2, pd.DataFrame(val_tuple2)])
 
-                if (float(tuple1['val_ler'])+float(tuple2['val_ler']))/2 <= 0.15:
-                    save_path = saver.save(session, checkpoints_path+"checkpoint_epoch_"+str(curr_epoch)+"_ler_"+str((float(tuple1['val_ler'])+float(tuple2['val_ler']))/2)+".ckpt")
+                # Comprobamos si se ha obtenido un LER menor al mínimo obtenido hasta el momento.
+                if (float(val_tuple1['val_ler'][0])+float(val_tuple2['val_ler'][0]))/2 <= LER:
+                    # Almacenamos el valor de las variables.
+                    save_path = saver.save(session, checkpoints_path+"checkpoint_epoch_"+str(curr_epoch)+"_ler_"+str((float(val_tuple1['val_ler'][0])+float(val_tuple2['val_ler'][0]))/2)+".ckpt")
                     print("Model saved in file: " +str(save_path))
 
-                if curr_epoch % 1000 == 0:
-                    print("Epoch: "+ str(curr_epoch) + "val_cost: " + str((float(tuple1['val_cost'])+float(tuple2['val_cost']))/2) + "val_ler: " + str((float(tuple1['val_ler'])+float(tuple2['val_ler']))/2))
+                    # Actualizamos el valor mínimo de LER.
+                    LER=(float(val_tuple1['val_ler'][0])+float(val_tuple2['val_ler'][0]))/2
+
+                # Comprobamos el periodo de impresión de ejemplos.
+                if curr_epoch % print_period == 0:
+
+                    # Imprimimos el error cometido para el Dataset de validación en la época actual.
+                    print("Epoch: "+ str(curr_epoch) + " val_cost: " + str((float(val_tuple1['val_cost'][0])+float(val_tuple2['val_cost'][0]))/2) + " val_ler: " + str((float(val_tuple1['val_ler'][0])+float(val_tuple2['val_ler'][0]))/2))
+
+                    # Imprimimos la salida del modelo para 10 ejemplos al azar del dataset de validación.
                     print("Examples:")
                     for j in range(10):
-                        prob_inputs, prob_targets, prob_original, prob_seq_len, _ = hw_utils.extract_batch_validation(ctc_input_len,1,im_path,csv_path + "validation1.csv",randint(0,8500))
+
+                        # Extraemos una muestra.
+                        prob_inputs, prob_targets, prob_original, prob_seq_len, _ = hw_utils.extract_ordered_batch(ctc_input_len,1,im_path,csv_path + "validation1.csv",randint(0,6086))
                         prob_feed = {inputs: prob_inputs,
                                      targets: prob_targets,
                                      keep_prob: 1,
                                      seq_len: prob_seq_len}
+
+                        # Obtenemos la salida y la mapeamos como una palabra para imprimirla por pantalla.
                         prob_d = session.run(decoded[0], feed_dict=prob_feed)
                         output = str(list(map(dct.get, list(prob_d.values))))
                         for ch in ["['", "']", "', '"]:
                             output = output.replace(ch, "")
-                        print("Target: " + str(prob_original) + "       Model Output: " + output)
-        result_validation1.to_csv("validation_result1.csv")
-        result_validation2.to_csv("validation_result2.csv")
-        result_train.to_csv("train_result.csv")
+                            prob_original=str(prob_original).replace(ch, "")
+                        print("Target: " + prob_original +"       Model Output: " + output)
+
+        # Almacenamos los resultados
+        val_result1.to_csv(results_path+"validation_result1.csv",index=False)
+        val_result2.to_csv(results_path+"validation_result2.csv",index=False)
+        train_result.to_csv(results_path+"training_result.csv",index=False)
         print("THE TRAINING IS OVER")
 
 
