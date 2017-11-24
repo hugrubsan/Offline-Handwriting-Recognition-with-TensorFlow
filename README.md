@@ -9,11 +9,11 @@ Sobre este sistema se realiza una validación cruzada y el test IAM.
 ### Ficheros Python:
 
 - *clean_IAM.py*: Script para limpieza y el preprocesamiento de las imágenes.
-- *ANN_model.py*: Modelo de la red neuronal implementada en Tensorflow.
+- *ANN_model.py*: Modelo de la red neuronal implementada en TensorFlow.
 - *cross-validation.py*: Script para la validación cruzada.
 - *train.py*: Script para entrenar el modelo y almacenar los parámetros que consiguen un mejor resultado.
 - *test.py*: Script para testear un modelo previamente entrenado.
-- *hw_utils.py*: Funciones utiles en distintas partes del proyecto.
+- *hw_utils.py*: Funciones útiles en distintas partes del proyecto.
 
 ### CSV:
 
@@ -23,15 +23,15 @@ Sobre este sistema se realiza una validación cruzada y el test IAM.
 
 ### Fichero de configuración
 
-Fichero que contiene todos los parametros del proyecto:
+Fichero que contiene todos los parámetros del proyecto:
 
 ```
 "general": Parámetros generales del proyecto.
 {
-"raw_data_path": Ruta a la imágenes sin preprocesar.
-"processed_data_path": Ruta para la imágenes preprocesadas.
+"raw_data_path": Ruta a las imágenes sin preprocesar.
+"processed_data_path": Ruta para las imágenes preprocesadas.
 "csv_path": Ruta al CSV de imágenes aptas.
-"height": Altura de la imágenes preprocesadas.
+"height": Altura de las imágenes preprocesadas.
 "width": Anchura de las imágenes preprocesadas.
 "dictionary": Diccionario para parsear las etiquetas.
 }
@@ -58,8 +58,8 @@ Fichero que contiene todos los parametros del proyecto:
 "results_path": Ruta para los resultados.
 "num_epochs": Número de épocas.
 "validation_period": Periodo de épocas para realizar la validación del modelo.
-"print_period":Periodo de épocas para la impresión por pantalla.
-"batch_size" : Tamaño del lote de muestras.
+"print_period": Periodo de épocas para la impresión por pantalla.
+"batch_size": Tamaño del lote de muestras.
 }
 
 
@@ -77,8 +77,8 @@ Fichero que contiene todos los parametros del proyecto:
 
 ## Primeros pasos.
 
-### Prerequisitos Software
-Python 3.6 y librerias:
+### Requisitos Software
+Python 3.6 y librerías:
 - TensorFlow 1.3
 - PIL
 - Pandas
@@ -98,7 +98,7 @@ python3 clean_IAM.py [path_config_file]
 ```
 Si no se añade ninguna ruta al archivo de configuración se tomará la ruta por defecto "./config.json"
 
-Este script selecciona las imagenes aptas para las pruebas, las reescala y le añade relleno hasta iguar sus dimensiones.
+Este script selecciona las imágenes aptas para las pruebas, las reescala y le añade relleno hasta igualar sus dimensiones.
 
 ## Ejecución.
 
@@ -115,15 +115,15 @@ Este script realiza 10 validaciones con distintas subdivisiones del dataset orig
 
 ### Test IAM
 
-El primer paso es entrenar el modelo con el dataset ofrecido por IAM con unas subdivisiones especificas. Para ello ejecutamos:
+El primer paso es entrenar el modelo con el dataset ofrecido por IAM con unas subdivisiones específicas. Para ello ejecutamos:
 
 ```
 python3 train.py [path_config_file]
 ```
 
-Este script realiza un entrenamiento del modelo y almacena los parametros que mejor resultado han dado para el dataset de validación.
+Este script realiza un entrenamiento del modelo y almacena los parámetros que mejor resultado han dado para el dataset de validación.
 
-Una ves tenemos el modelo entrenado, obtenemos el resultado del test ejecutando:
+Una vez tenemos el modelo entrenado, obtenemos el resultado del test ejecutando:
 
 ```
 python3 test.py [path_config_file]
