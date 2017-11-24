@@ -9,11 +9,11 @@ Sobre este sistema se realiza una validación cruzada y el test IAM.
 ### Ficheros Python:
 
 - *clean_IAM.py*: Script para limpieza y el preprocesamiento de las imágenes.
-- *ANN_model*: Modelo de la red neuronal implementada en Tensorflow.
-- *cross-validation*: Script para la validación cruzada.
-- *train*: Script para entrenar el modelo y almacenar los parámetros que consiguen un mejor resultado.
-- *test*: Script para testear un modelo previamente entrenado.
-- *hw_utils*: Funciones utiles en distintas partes del proyecto.
+- *ANN_model.py*: Modelo de la red neuronal implementada en Tensorflow.
+- *cross-validation.py*: Script para la validación cruzada.
+- *train.py*: Script para entrenar el modelo y almacenar los parámetros que consiguen un mejor resultado.
+- *test.py*: Script para testear un modelo previamente entrenado.
+- *hw_utils.py*: Funciones utiles en distintas partes del proyecto.
 
 ### CSV:
 
@@ -73,7 +73,6 @@ Fichero que contiene todos los parametros del proyecto:
 "print_period":Periodo de épocas para la impresión por pantalla.
 "batch_size" : Tamaño del lote de muestras.
 }
-
 ```
 
 ## Primeros pasos.
