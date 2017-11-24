@@ -79,19 +79,14 @@ Fichero que contiene todos los parametros del proyecto:
 ## Primeros pasos.
 
 ### Prerequisitos Software
+Python 3.6 y librerias:
+- TensorFlow 1.3
+- PIL
+- Pandas
+- Numpy
+- Json
+- Ast
 
-```
-Python 3.6
-
-Librerias:
-TensorFlow 1.3
-PIL
-Pandas
-Numpy
-Json
-Ast
-
-```
 
 ### Instalación y preprocesado de datos.
 
@@ -101,7 +96,6 @@ Una vez hemos conseguido el dataset ejecutamos:
 
 ```
 python3 clean_IAM.py [path_config_file]
-
 ```
 Si no se añade ninguna ruta al archivo de configuración se tomará la ruta por defecto "./config.json"
 
@@ -126,7 +120,6 @@ El primer paso es entrenar el modelo con el dataset ofrecido por IAM con unas su
 
 ```
 python3 train.py [path_config_file]
-
 ```
 
 Este script realiza un entrenamiento del modelo y almacena los parametros que mejor resultado han dado para el dataset de validación.
@@ -135,7 +128,6 @@ Una ves tenemos el modelo entrenado, obtenemos el resultado del test ejecutando:
 
 ```
 python3 test.py [path_config_file]
-
 ```
 
 El resultado de se muestra por pantalla y las salidas del sistema se almacenan en CSV.
