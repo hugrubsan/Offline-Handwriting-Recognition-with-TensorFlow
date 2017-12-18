@@ -93,7 +93,8 @@ def run_ctc():
             for curr_epoch in range(num_epochs):
 
                 # Extraemos un lote aleatorio del Dataset de entrenamiento.
-                train_inputs, train_targets, original, train_seq_len = hw_utils.extract_training_batch(ctc_input_len,batch_size,im_path,csv_path + "train" + str(i + 1) + ".csv")
+                train_inputs, train_targets, original, train_seq_len = hw_utils.extract_training_batch(ctc_input_len,batch_size,
+                                                                       im_path,csv_path + "train" + str(i + 1) + ".csv")
                 feed = {inputs: train_inputs, targets: train_targets, keep_prob: 0.5, seq_len: train_seq_len}
 
                 # Ejecutamos "optimizer", minimizando el error para el lote extraido.
@@ -107,7 +108,8 @@ def run_ctc():
                     train_result = pd.concat([train_result, pd.DataFrame(train_tuple)])
 
                     # Realizamos la validación del modelo y almacenamos los resultados.
-                    val_tuple=hw_utils.validation(curr_epoch,ctc_input_len, batch_size, im_path, csv_path + "validation" + str(i + 1) + ".csv", inputs, targets, keep_prob, seq_len, session, cost, ler)
+                    val_tuple=hw_utils.validation(curr_epoch,ctc_input_len, batch_size, im_path, csv_path + "validation" + str(i + 1) + ".csv",
+                                                  inputs, targets, keep_prob, seq_len, session, cost, ler)
                     val_result = pd.concat([val_result, pd.DataFrame(val_tuple)])
 
                 # Comprobamos el periodo de impresión de ejemplos.
@@ -119,7 +121,9 @@ def run_ctc():
                     for j in range(10):
 
                         # Extraemos una muestra.
-                        prob_inputs, prob_targets, prob_original, prob_seq_len, _ = hw_utils.extract_ordered_batch(ctc_input_len,1,im_path,csv_path + "validation" + str(i + 1) + ".csv",randint(0,8500))
+                        prob_inputs, prob_targets, prob_original, prob_seq_len, _ = hw_utils.extract_ordered_batch(ctc_input_len,1,
+                                                                                    im_path,csv_path + "validation" + str(i + 1) + ".csv",
+                                                                                    randint(0,8500))
                         prob_feed = {inputs: prob_inputs,
                                      targets: prob_targets,
                                      keep_prob: 1,
