@@ -101,7 +101,8 @@ def run_ctc():
         for curr_epoch in range(num_epochs):
 
             # Extraemos un lote aleatorio del Dataset de entrenamiento.
-            train_inputs, train_targets, original, train_seq_len = hw_utils.extract_training_batch(ctc_input_len,batch_size,im_path,csv_path + "train.csv")
+            train_inputs, train_targets, original, train_seq_len = hw_utils.extract_training_batch(ctc_input_len,batch_size,
+                                                                                                   im_path,csv_path + "train.csv")
             feed = {inputs: train_inputs, targets: train_targets, keep_prob: 0.5, seq_len: train_seq_len}
 
             # Ejecutamos "optimizer", minimizando el error para el lote extraido.
@@ -115,8 +116,9 @@ def run_ctc():
                 train_result = pd.concat([train_result, pd.DataFrame(train_tuple)])
 
                 # Realizamos la validación del modelo para los dos Datasets de validación y almacenamos los resultados
-                val_tuple1=hw_utils.validation(curr_epoch,ctc_input_len, batch_size, im_path, csv_path + "validation1.csv", inputs, targets, keep_prob, seq_len, session,
-                           cost, ler)
+                val_tuple1=hw_utils.validation(curr_epoch,ctc_input_len, batch_size, im_path,
+                                               csv_path + "validation1.csv", inputs, targets, keep_prob, seq_len, session,
+                                               cost, ler)
                 val_result1 = pd.concat([val_result1, pd.DataFrame(val_tuple1)])
 
                 val_tuple2 = hw_utils.validation(curr_epoch,ctc_input_len, batch_size, im_path, csv_path + "validation2.csv", inputs,
@@ -127,7 +129,8 @@ def run_ctc():
                 # Comprobamos si se ha obtenido un LER menor al mínimo obtenido hasta el momento.
                 if (float(val_tuple1['val_ler'][0])+float(val_tuple2['val_ler'][0]))/2 <= LER:
                     # Almacenamos el valor de las variables.
-                    save_path = saver.save(session, checkpoints_path+"checkpoint_epoch_"+str(curr_epoch)+"_ler_"+str((float(val_tuple1['val_ler'][0])+float(val_tuple2['val_ler'][0]))/2)+".ckpt")
+                    save_path = saver.save(session, checkpoints_path+"checkpoint_epoch_"+
+                                str(curr_epoch)+"_ler_"+str((float(val_tuple1['val_ler'][0])+float(val_tuple2['val_ler'][0]))/2)+".ckpt")
                     print("Model saved in file: " +str(save_path))
 
                     # Actualizamos el valor mínimo de LER.
@@ -137,14 +140,17 @@ def run_ctc():
                 if curr_epoch % print_period == 0:
 
                     # Imprimimos el error cometido para el Dataset de validación en la época actual.
-                    print("Epoch: "+ str(curr_epoch) + " val_cost: " + str((float(val_tuple1['val_cost'][0])+float(val_tuple2['val_cost'][0]))/2) + " val_ler: " + str((float(val_tuple1['val_ler'][0])+float(val_tuple2['val_ler'][0]))/2))
+                    print("Epoch: "+ str(curr_epoch) + " val_cost: " + 
+                    str((float(val_tuple1['val_cost'][0])+float(val_tuple2['val_cost'][0]))/2) + 
+                    " val_ler: " + str((float(val_tuple1['val_ler'][0])+float(val_tuple2['val_ler'][0]))/2))
 
                     # Imprimimos la salida del modelo para 10 ejemplos al azar del dataset de validación.
                     print("Examples:")
                     for j in range(10):
 
                         # Extraemos una muestra.
-                        prob_inputs, prob_targets, prob_original, prob_seq_len, _ = hw_utils.extract_ordered_batch(ctc_input_len,1,im_path,csv_path + "validation1.csv",randint(0,6086))
+                        prob_inputs, prob_targets, prob_original, prob_seq_len, _ = hw_utils.extract_ordered_batch(ctc_input_len,1,
+                                                                                    im_path,csv_path + "validation1.csv",randint(0,6086))
                         prob_feed = {inputs: prob_inputs,
                                      targets: prob_targets,
                                      keep_prob: 1,
