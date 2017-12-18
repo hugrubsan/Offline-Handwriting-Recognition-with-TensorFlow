@@ -55,7 +55,8 @@ def main():
             # Comprobamos si el fichero está en el array de imagenes aptas.
             if name in lstIm:
                 # Se ejecuta la función "scale_invert"
-                hw_utils.scale_invert(str(root)+str("/")+str(name+ext),str(data["general"]["processed_data_path"])+str(name+ext),int(data["general"]["height"]),int(data["general"]["width"]))
+                hw_utils.scale_invert(str(root)+str("/")+str(name+ext),
+                str(data["general"]["processed_data_path"])+str(name+ext),int(data["general"]["height"]),int(data["general"]["width"]))
 
 
 if __name__ == "__main__":
