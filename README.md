@@ -130,3 +130,17 @@ python3 test.py [path_config_file]
 ```
 
 El resultado se muestra por pantalla y las salidas del sistema se almacenan en CSV.
+
+## Resultados.
+
+### Cross-validation.
+
+![cross-val-cost](https://github.com/hugrubsan/Offline-Handwriting-Recognition-with-TensorFlow/blob/master/images/cross-val-cost.png)
+
+![cross-val-ler](https://github.com/hugrubsan/Offline-Handwriting-Recognition-with-TensorFlow/blob/master/images/cross-val-ler.png)
+
+### Test IAM
+
+![test-cost](https://github.com/hugrubsan/Offline-Handwriting-Recognition-with-TensorFlow/blob/master/images/test-cost.png)
+
+![test-ler](https://github.com/hugrubsan/Offline-Handwriting-Recognition-with-TensorFlow/blob/master/images/test-ler.png)
