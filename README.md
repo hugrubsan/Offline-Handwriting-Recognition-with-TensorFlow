@@ -4,6 +4,8 @@ Sistema de Deep Learning para el Reconocimiento de Palabras Manuscritas implemen
 
 Sobre este sistema se realiza una validación cruzada y el test IAM.
 
+Añadida memoria teorica en TFG-Hugo-Rubio.pdf.
+
 ## Estructura
 
 ### Ficheros Python:
